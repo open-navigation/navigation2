@@ -19,7 +19,7 @@
 #include <set>
 #include <string>
 
-#include "utils/test_action_server.hpp"
+#include "nav2_behavior_tree/utils/test_action_server.hpp"
 #include "behaviortree_cpp/bt_factory.h"
 #include "nav2_behavior_tree/plugins/action/planner_selector_node.hpp"
 #include "nav_msgs/msg/path.hpp"

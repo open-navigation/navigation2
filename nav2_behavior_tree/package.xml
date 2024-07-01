@@ -11,46 +11,26 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_export_depend>tf2_geometry_msgs</build_export_depend>
-  <build_export_depend>std_srvs</build_export_depend>
-
-  <build_depend>rclcpp</build_depend>
-  <build_depend>rclcpp_action</build_depend>
-  <build_depend>rclcpp_lifecycle</build_depend>
-  <build_depend>behaviortree_cpp</build_depend>
-  <build_depend>builtin_interfaces</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>nav2_msgs</build_depend>
-  <build_depend>nav_msgs</build_depend>
-  <build_depend>tf2</build_depend>
-  <build_depend>tf2_ros</build_depend>
-  <build_depend>tf2_geometry_msgs</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>std_srvs</build_depend>
-  <build_depend>nav2_util</build_depend>
-  <build_depend>lifecycle_msgs</build_depend>
-  <build_depend>nav2_common</build_depend>
-
-  <exec_depend>rclcpp</exec_depend>
-  <exec_depend>rclcpp_action</exec_depend>
-  <exec_depend>rclcpp_lifecycle</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>behaviortree_cpp</exec_depend>
-  <exec_depend>builtin_interfaces</exec_depend>
-  <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>nav2_msgs</exec_depend>
-  <exec_depend>nav_msgs</exec_depend>
-  <exec_depend>tf2</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>tf2_geometry_msgs</exec_depend>
-  <exec_depend>nav2_util</exec_depend>
-  <exec_depend>lifecycle_msgs</exec_depend>
+  <depend>action_msgs</depend>
+  <depend>behaviortree_cpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav2_common</depend>
+  <depend>nav2_msgs</depend>
+  <depend>nav2_util</depend>
+  <depend>nav_msgs</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_action</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
 
   <test_depend>ament_lint_common</test_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>lifecycle_msgs</test_depend>
   <test_depend>test_msgs</test_depend>
 
   <export>

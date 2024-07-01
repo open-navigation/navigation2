@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <string>
@@ -22,6 +23,9 @@
 #include "nav2_util/geometry_utils.hpp"
 #include "nav2_util/robot_utils.hpp"
 #include "nav_msgs/msg/path.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/buffer.h"
 #include "tf2_ros/create_timer_ros.h"
 
 #include "nav2_behavior_tree/plugins/action/truncate_path_local_action.hpp"

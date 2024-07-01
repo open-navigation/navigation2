@@ -19,7 +19,7 @@
 
 #include "behaviortree_cpp/bt_factory.h"
 
-#include "utils/test_action_server.hpp"
+#include "nav2_behavior_tree/utils/test_action_server.hpp"
 #include "nav2_behavior_tree/plugins/action/assisted_teleop_action.hpp"
 
 class AssistedTeleopActionServer : public TestActionServer<nav2_msgs::action::AssistedTeleop>

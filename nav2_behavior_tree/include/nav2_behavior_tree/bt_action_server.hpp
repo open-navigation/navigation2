@@ -15,6 +15,8 @@
 #ifndef NAV2_BEHAVIOR_TREE__BT_ACTION_SERVER_HPP_
 #define NAV2_BEHAVIOR_TREE__BT_ACTION_SERVER_HPP_
 
+#include <chrono>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,6 +26,8 @@
 #include "nav2_behavior_tree/ros_topic_logger.hpp"
 #include "nav2_util/lifecycle_node.hpp"
 #include "nav2_util/simple_action_server.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
 
 namespace nav2_behavior_tree
 {

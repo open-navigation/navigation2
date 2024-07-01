@@ -20,7 +20,7 @@
 
 #include "behaviortree_cpp/bt_factory.h"
 
-#include "utils/test_action_server.hpp"
+#include "nav2_behavior_tree/utils/test_action_server.hpp"
 #include "nav2_behavior_tree/plugins/action/drive_on_heading_action.hpp"
 
 class DriveOnHeadingActionServer : public TestActionServer<nav2_msgs::action::DriveOnHeading>

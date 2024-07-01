@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef UTILS__TEST_ACTION_SERVER_HPP_
-#define UTILS__TEST_ACTION_SERVER_HPP_
+#ifndef NAV2_BEHAVIOR_TREE__UTILS__TEST_ACTION_SERVER_HPP_
+#define NAV2_BEHAVIOR_TREE__UTILS__TEST_ACTION_SERVER_HPP_
 
 #include <string>
 #include <memory>
@@ -97,4 +97,4 @@ private:
   bool goal_cancelled_ = false;
 };
 
-#endif  // UTILS__TEST_ACTION_SERVER_HPP_
+#endif  // NAV2_BEHAVIOR_TREE__UTILS__TEST_ACTION_SERVER_HPP_

@@ -14,17 +14,21 @@
 // limitations under the License.
 
 #include <gtest/gtest.h>
+
 #include <memory>
 #include <set>
 #include <string>
 
-#include "nav_msgs/msg/path.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
+#include "nav_msgs/msg/path.hpp"
 #include "nav2_util/geometry_utils.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "tf2/LinearMath/Matrix3x3.h"
+#include "tf2/LinearMath/Quaternion.h"
 
 #include "behaviortree_cpp/bt_factory.h"
 
-#include "utils/test_action_server.hpp"
+#include "nav2_behavior_tree/utils/test_action_server.hpp"
 #include "nav2_behavior_tree/plugins/action/truncate_path_action.hpp"
 
 

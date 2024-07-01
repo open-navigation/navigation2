@@ -25,7 +25,7 @@
 
 #include "behaviortree_cpp/bt_factory.h"
 
-#include "utils/test_action_server.hpp"
+#include "nav2_behavior_tree/utils/test_action_server.hpp"
 #include "nav2_behavior_tree/plugins/action/remove_passed_goals_action.hpp"
 #include "utils/test_behavior_tree_fixture.hpp"
 

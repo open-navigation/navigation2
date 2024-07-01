@@ -24,7 +24,7 @@
 
 #include "behaviortree_cpp/bt_factory.h"
 
-#include "utils/test_action_server.hpp"
+#include "nav2_behavior_tree/utils/test_action_server.hpp"
 #include "nav2_behavior_tree/plugins/action/compute_path_through_poses_action.hpp"
 
 class ComputePathThroughPosesActionServer
