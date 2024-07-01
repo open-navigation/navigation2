@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import os
+from pathlib import Path
 import sys
 
 from ament_index_python.packages import get_package_share_directory
@@ -21,6 +22,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch import LaunchService
 from launch.actions import (
+    AppendEnvironmentVariable,
     ExecuteProcess,
     IncludeLaunchDescription,
     SetEnvironmentVariable,
@@ -30,20 +32,29 @@ from launch_ros.actions import Node
 from launch_testing.legacy import LaunchTestService
 
 from nav2_common.launch import RewrittenYaml
+from nav2_simple_commander.utils import kill_os_processes
 
 
 def generate_launch_description():
-    map_yaml_file = os.getenv('TEST_MAP')
-    world = os.getenv('TEST_WORLD')
+    sim_dir = get_package_share_directory('nav2_minimal_tb3_sim')
+    nav2_bringup_dir = get_package_share_directory('nav2_bringup')
+    ros_gz_sim_dir = get_package_share_directory('ros_gz_sim')
 
+    world_sdf_xacro = os.path.join(sim_dir, 'worlds', 'tb3_sandbox.sdf.xacro')
+    robot_sdf = os.path.join(sim_dir, 'urdf', 'gz_waffle.sdf.xacro')
+
+    urdf = os.path.join(sim_dir, 'urdf', 'turtlebot3_waffle.urdf')
+    with open(urdf, 'r') as infp:
+        robot_description = infp.read()
+
+    map_yaml_file = os.path.join(nav2_bringup_dir, 'maps', 'tb3_sandbox.yaml')
     bt_navigator_xml = os.path.join(
         get_package_share_directory('nav2_bt_navigator'),
         'behavior_trees',
         os.getenv('BT_NAVIGATOR_XML'),
     )
 
-    bringup_dir = get_package_share_directory('nav2_bringup')
-    params_file = os.path.join(bringup_dir, 'params/nav2_params.yaml')
+    params_file = os.path.join(nav2_bringup_dir, 'params/nav2_params.yaml')
 
     # Replace the `use_astar` setting on the params file
     configured_params = RewrittenYaml(
@@ -54,34 +65,46 @@ def generate_launch_description():
         [
             SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'),
             SetEnvironmentVariable('RCUTILS_LOGGING_USE_STDOUT', '1'),
-            # Launch gazebo server for simulation
-            ExecuteProcess(
-                cmd=[
-                    'gzserver',
-                    '-s',
-                    'libgazebo_ros_init.so',
-                    '--minimal_comms',
-                    world,
-                ],
-                output='screen',
+            AppendEnvironmentVariable(
+                'GZ_SIM_RESOURCE_PATH', os.path.join(sim_dir, 'models')
             ),
-            # TODO(orduno) Launch the robot state publisher instead
-            #              using a local copy of TB3 urdf file
-            Node(
-                package='tf2_ros',
-                executable='static_transform_publisher',
-                output='screen',
-                arguments=['0', '0', '0', '0', '0', '0', 'base_footprint', 'base_link'],
-            ),
-            Node(
-                package='tf2_ros',
-                executable='static_transform_publisher',
-                output='screen',
-                arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'base_scan'],
+            AppendEnvironmentVariable(
+                'GZ_SIM_RESOURCE_PATH',
+                str(Path(os.path.join(sim_dir)).parent.resolve())
             ),
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    os.path.join(bringup_dir, 'launch', 'bringup_launch.py')
+                    os.path.join(ros_gz_sim_dir, 'launch', 'gz_sim.launch.py')
+                ),
+                launch_arguments={'gz_args': ['-r -s ', world_sdf_xacro]}.items(),
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    os.path.join(sim_dir, 'launch', 'spawn_tb3.launch.py')
+                ),
+                launch_arguments={
+                    'use_sim_time': 'True',
+                    'robot_sdf': robot_sdf,
+                    'x_pose': '-2.0',
+                    'y_pose': '-0.5',
+                    'z_pose': '0.01',
+                    'roll': '0.0',
+                    'pitch': '0.0',
+                    'yaw': '0.0',
+                }.items(),
+            ),
+            Node(
+                package='robot_state_publisher',
+                executable='robot_state_publisher',
+                name='robot_state_publisher',
+                output='screen',
+                parameters=[
+                    {'use_sim_time': True, 'robot_description': robot_description}
+                ],
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    os.path.join(nav2_bringup_dir, 'launch', 'bringup_launch.py')
                 ),
                 launch_arguments={
                     'map': map_yaml_file,
@@ -111,7 +134,9 @@ def main(argv=sys.argv[1:]):
     lts.add_test_action(ld, test1_action)
     ls = LaunchService(argv=argv)
     ls.include_launch_description(ld)
-    return lts.run(ls)
+    return_code = lts.run(ls)
+    kill_os_processes('gz sim')
+    return return_code
 
 
 if __name__ == '__main__':
