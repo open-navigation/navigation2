@@ -65,6 +65,8 @@ static const char INVALID_POINTS_STR[]{
 };
 static const double CIRCLE_RADIUS{0.5};
 static const int MIN_POINTS{2};
+static const double MIN_TIME_IN_SEC{1.0};
+static const double MIN_TIME_OUT_SEC{1.0};
 static const double SLOWDOWN_RATIO{0.7};
 static const double LINEAR_LIMIT{0.4};
 static const double ANGULAR_LIMIT{0.09};
@@ -336,6 +338,17 @@ void Tester::setCommonParameters(const std::string & polygon_name, const std::st
     polygon_name + ".polygon_pub_topic", rclcpp::ParameterValue(POLYGON_PUB_TOPIC));
   test_node_->set_parameter(
     rclcpp::Parameter(polygon_name + ".polygon_pub_topic", POLYGON_PUB_TOPIC));
+
+  test_node_->declare_parameter(
+    polygon_name + ".min_time_in_sec", rclcpp::ParameterValue(MIN_TIME_IN_SEC));
+  test_node_->set_parameter(
+    rclcpp::Parameter(polygon_name + ".min_time_in_sec",MIN_TIME_IN_SEC));
+
+  test_node_->declare_parameter(
+    polygon_name + ".min_time_out_sec", rclcpp::ParameterValue(MIN_TIME_OUT_SEC));
+  test_node_->set_parameter(
+    rclcpp::Parameter(polygon_name + ".min_time_out_sec", MIN_TIME_OUT_SEC));
+
 }
 
 void Tester::setPolygonParameters(

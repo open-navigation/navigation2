@@ -145,6 +145,22 @@ public:
    */
   virtual int getPointsInside(const std::vector<Point> & points) const;
 
+
+  /**
+   * @brief Get current action status 
+   * @return: True if the action must be applied, false otherwise
+   */
+  bool shouldApplyAction() const;
+
+  /**
+   * @brief Add collision points to be taken into account 
+   * @param Input array of points to be checked
+   * @param Current time
+   */
+  void newCollisionPoints(
+    const std::vector<Point> & collision_points,
+    const rclcpp::Time & current_time);
+
   /**
    * @brief Obtains estimated (simulated) time before a collision.
    * Applicable for APPROACH model.
@@ -251,6 +267,10 @@ protected:
   ActionType action_type_;
   /// @brief Minimum number of data readings within a zone to trigger the action
   int min_points_;
+  /// @brief Minimum amout of time with only measurements inside the polygon to trigger the action
+  int min_time_in_sec_;
+  /// @brief Minimum amount of time with only measurements outside the polygon to stop applying the action
+  int min_time_out_sec_;
   /// @brief Robot slowdown (share of its actual speed)
   double slowdown_ratio_;
   /// @brief Robot linear limit
@@ -277,6 +297,12 @@ protected:
   std::string base_frame_id_;
   /// @brief Transform tolerance
   tf2::Duration transform_tolerance_;
+  /// @brief Current decision for the polygon (apply or not apply the action)
+  bool should_apply_action_;
+  /// @brief Current number of consecutive data in to trigger the action
+  rclcpp::Time last_time_data_in_;
+  /// @brief Current number of consecutive data out to trigger the action
+  rclcpp::Time last_time_data_out_;
 
   // Visualization
   /// @brief Whether to publish the polygon

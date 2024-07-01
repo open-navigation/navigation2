@@ -1,5 +1,4 @@
-// Copyright (c) 2022 Samsung R&D Institute Russia
-//
+// Copyright (c) 2022 Samsung R&D Institute Russia //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -39,7 +38,9 @@ Polygon::Polygon(
 : node_(node), polygon_name_(polygon_name), action_type_(DO_NOTHING),
   slowdown_ratio_(0.0), linear_limit_(0.0), angular_limit_(0.0),
   footprint_sub_(nullptr), tf_buffer_(tf_buffer),
-  base_frame_id_(base_frame_id), transform_tolerance_(transform_tolerance)
+  base_frame_id_(base_frame_id), transform_tolerance_(transform_tolerance),
+  should_apply_action_(false), last_time_data_in_(rclcpp::Time(0,0)), 
+  last_time_data_out_(rclcpp::Time(0,0))
 {
   RCLCPP_INFO(logger_, "[%s]: Creating Polygon", polygon_name_.c_str());
 }
@@ -229,6 +230,34 @@ int Polygon::getPointsInside(const std::vector<Point> & points) const
   return num;
 }
 
+bool Polygon::shouldApplyAction() const
+{
+    return should_apply_action_;
+}
+
+void Polygon::newCollisionPoints(
+  const std::vector<Point> & collision_points,
+  const rclcpp::Time & current_time) 
+{
+  bool is_in = getPointsInside(collision_points) >= getMinPoints();
+  // Record time of last data in the same direction as the current decision
+  if (should_apply_action_ && is_in) {
+    last_time_data_in_ = current_time;
+  } else if (!should_apply_action_ && !is_in){
+    last_time_data_out_ = current_time;
+  }
+
+  // Update the decision when required
+  if (should_apply_action_ 
+    && (last_time_data_out_ - current_time).seconds() >= min_time_out_sec_ ) {
+      should_apply_action_ = false;
+  }
+  else if (!should_apply_action_ 
+    && (last_time_data_in_ - current_time).seconds() >= min_time_out_sec_) {
+      should_apply_action_ = true;
+  }
+}
+
 double Polygon::getCollisionTime(
   const std::vector<Point> & collision_points,
   const Velocity & velocity) const
@@ -321,6 +350,14 @@ bool Polygon::getCommonParameters(
     nav2_util::declare_parameter_if_not_declared(
       node, polygon_name_ + ".min_points", rclcpp::ParameterValue(4));
     min_points_ = node->get_parameter(polygon_name_ + ".min_points").as_int();
+
+    nav2_util::declare_parameter_if_not_declared(
+      node, polygon_name_ + ".min_time_in_sec", rclcpp::ParameterValue(1));
+    min_time_in_sec_ = node->get_parameter(polygon_name_ + ".min_time_in_sec").as_double();
+
+    nav2_util::declare_parameter_if_not_declared(
+      node, polygon_name_ + ".min_time_out_sec", rclcpp::ParameterValue(1));
+    min_time_out_sec_ = node->get_parameter(polygon_name_ + ".min_time_out_sec").as_double();
 
     try {
       nav2_util::declare_parameter_if_not_declared(

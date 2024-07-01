@@ -513,8 +513,8 @@ bool CollisionMonitor::processStopSlowdownLimit(
   if (!polygon->isShapeSet()) {
     return false;
   }
-
-  if (polygon->getPointsInside(collision_points) >= polygon->getMinPoints()) {
+  polygon->newCollisionPoints(collision_points, get_clock()->now());
+  if (polygon->shouldApplyAction()) {
     if (polygon->getActionType() == STOP) {
       // Setting up zero velocity for STOP model
       robot_action.polygon_name = polygon->getName();
