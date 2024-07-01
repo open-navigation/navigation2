@@ -268,7 +268,10 @@ template<class ActionT>
 void BtActionServer<ActionT>::executeCallback()
 {
   if (!on_goal_received_callback_(action_server_->get_current_goal())) {
-    action_server_->terminate_current();
+    // Give server an opportunity to populate the result message
+    auto result = std::make_shared<typename ActionT::Result>();
+    populateErrorCode(result);
+    action_server_->terminate_current(result);
     cleanErrorCodes();
     return;
   }
@@ -333,6 +336,7 @@ void BtActionServer<ActionT>::populateErrorCode(
   typename std::shared_ptr<typename ActionT::Result> result)
 {
   int highest_priority_error_code = std::numeric_limits<int>::max();
+  std::string highest_priority_error_msg = "";
   for (const auto & error_code : error_code_names_) {
     try {
       int current_error_code = blackboard_->get<int>(error_code);
@@ -349,6 +353,7 @@ void BtActionServer<ActionT>::populateErrorCode(
 
   if (highest_priority_error_code != std::numeric_limits<int>::max()) {
     result->error_code = highest_priority_error_code;
+    result->error_msg = highest_priority_error_msg;
   }
 }
 

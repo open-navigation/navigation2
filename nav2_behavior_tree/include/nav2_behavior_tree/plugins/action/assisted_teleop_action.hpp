@@ -80,7 +80,9 @@ public:
         BT::InputPort<double>("time_allowance", 10.0, "Allowed time for running assisted teleop"),
         BT::InputPort<bool>("is_recovery", false, "If true the recovery count will be incremented"),
         BT::OutputPort<ActionResult::_error_code_type>(
-          "error_code_id", "The assisted teleop behavior server error code")
+          "error_code_id", "The assisted teleop behavior server error code"),
+        BT::OutputPort<ActionResult::_error_code_type>(
+          "error_msg", "The assisted teleop behavior server error msg"),
       });
   }
 

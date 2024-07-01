@@ -18,6 +18,7 @@
 #include <memory>
 #include <limits>
 #include "nav2_bt_navigator/navigators/navigate_through_poses.hpp"
+#include "nav2_core/navigator_exceptions.hpp"
 
 namespace nav2_bt_navigator
 {
@@ -45,6 +46,8 @@ NavigateThroughPosesNavigator::configure(
   // Odometry smoother object for getting current speed
   odom_smoother_ = odom_smoother;
 
+  current_error_code_ = ActionT::Result::NONE;
+  current_error_msg_ = "";
   return true;
 }
 
@@ -75,9 +78,10 @@ NavigateThroughPosesNavigator::goalReceived(ActionT::Goal::ConstSharedPtr goal)
   auto bt_xml_filename = goal->behavior_tree;
 
   if (!bt_action_server_->loadBehaviorTree(bt_xml_filename)) {
-    RCLCPP_ERROR(
-      logger_, "Error loading XML file: %s. Navigation canceled.",
-      bt_xml_filename.c_str());
+    current_error_code_ = ActionT::Result::FAILED_TO_LOAD_BEHAVIOR_TREE;
+    current_error_msg_ = "Error loading XML file: " + bt_xml_filename +
+      ". Navigation canceled.";
+    RCLCPP_ERROR(logger_, current_error_msg_.c_str());
     return false;
   }
 
@@ -86,9 +90,11 @@ NavigateThroughPosesNavigator::goalReceived(ActionT::Goal::ConstSharedPtr goal)
 
 void
 NavigateThroughPosesNavigator::goalCompleted(
-  typename ActionT::Result::SharedPtr /*result*/,
+  typename ActionT::Result::SharedPtr result,
   const nav2_behavior_tree::BtStatus /*final_bt_status*/)
 {
+  result->error_code = current_error_code_;
+  result->error_msg = current_error_msg_;
 }
 
 void
@@ -116,8 +122,7 @@ NavigateThroughPosesNavigator::onLoop()
       feedback_utils_.global_frame, feedback_utils_.robot_frame,
       feedback_utils_.transform_tolerance))
   {
-    RCLCPP_ERROR(logger_, "Robot pose is not available.");
-    return;
+    throw nav2_core::NavigatorPoseNotAvailable("Robot pose is not available.");
   }
 
   try {
@@ -125,7 +130,7 @@ NavigateThroughPosesNavigator::onLoop()
     nav_msgs::msg::Path current_path;
     if (!blackboard->get(path_blackboard_id_, current_path) || current_path.poses.size() == 0u) {
       // If no path set yet or not meaningful, can't compute ETA or dist remaining yet.
-      throw std::exception();
+      throw nav2_core::NavigatorInvalidPath("no valid path available");
     }
 
     // Find the closest pose to current pose on global path
@@ -164,8 +169,21 @@ NavigateThroughPosesNavigator::onLoop()
 
     feedback_msg->distance_remaining = distance_remaining;
     feedback_msg->estimated_time_remaining = estimated_time_remaining;
-  } catch (...) {
-    // Ignore
+  } catch (const nav2_core::NavigatorPoseNotAvailable & ex) {
+    current_error_code_ = ActionT::Result::POSE_NOT_AVAILABLE;
+    current_error_msg_ = ex.what();
+    RCLCPP_ERROR(logger_, current_error_msg_.c_str());
+    // Returning since no point attempting recovery or publishing
+    // feedback until robot pose is available.
+    return;
+  } catch (const nav2_core::NavigatorInvalidPath & ex) {
+    current_error_code_ = ActionT::Result::NO_VALID_PATH;
+    current_error_msg_ = ex.what();
+    // Ignore ??
+  } catch (const std::runtime_error & ex) {
+    current_error_code_ = ActionT::Result::UNKNOWN;
+    current_error_msg_ = ex.what();
+    // Ignore ??
   }
 
   int recovery_count = 0;
@@ -218,10 +236,15 @@ NavigateThroughPosesNavigator::initializeGoalPoses(ActionT::Goal::ConstSharedPtr
         goal_pose, goal_pose, *feedback_utils_.tf, feedback_utils_.global_frame,
         feedback_utils_.transform_tolerance))
     {
-      RCLCPP_ERROR(
-        logger_,
-        "Failed to transform a goal pose provided with frame_id '%s' to the global frame '%s'.",
-        goal_pose.header.frame_id.c_str(), feedback_utils_.global_frame.c_str());
+      current_error_code_ = ActionT::Result::TF_ERROR;
+      current_error_msg_ =
+        "Failed to transform a goal pose provided with frame_id '" +
+        goal_pose.header.frame_id +
+        "' to the global frame '" +
+        feedback_utils_.global_frame +
+        "'.";
+
+      RCLCPP_ERROR(logger_, current_error_msg_.c_str());
       return false;
     }
   }

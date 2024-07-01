@@ -86,6 +86,8 @@ public:
         BT::InputPort<std::string>("progress_checker_id", ""),
         BT::OutputPort<ActionResult::_error_code_type>(
           "error_code_id", "The follow path error code"),
+        BT::OutputPort<ActionResult::_error_code_type>(
+          "error_msg", "The follow path error msg"),
       });
   }
 };

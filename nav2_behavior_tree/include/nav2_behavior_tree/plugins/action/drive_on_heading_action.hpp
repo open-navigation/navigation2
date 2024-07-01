@@ -60,7 +60,9 @@ public:
         BT::InputPort<double>("speed", 0.025, "Speed at which to travel"),
         BT::InputPort<double>("time_allowance", 10.0, "Allowed time for driving on heading"),
         BT::OutputPort<Action::Result::_error_code_type>(
-          "error_code_id", "The drive on heading behavior server error code")
+          "error_code_id", "The drive on heading behavior server error code"),
+        BT::OutputPort<ActionResult::_error_code_type>(
+          "error_msg", "The drive on heading behavior server error msg"),
       });
   }
 

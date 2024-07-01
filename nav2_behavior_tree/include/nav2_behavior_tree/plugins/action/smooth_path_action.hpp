@@ -87,6 +87,8 @@ public:
           "was_completed", "True if smoothing was not interrupted by time limit"),
         BT::OutputPort<ActionResult::_error_code_type>(
           "error_code_id", "The smooth path error code"),
+        BT::OutputPort<ActionResult::_error_code_type>(
+          "error_msg", "The smooth path error msg"),
       });
   }
 };

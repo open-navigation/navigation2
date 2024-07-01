@@ -86,6 +86,8 @@ public:
         BT::OutputPort<nav_msgs::msg::Path>("path", "Path created by ComputePathThroughPoses node"),
         BT::OutputPort<ActionResult::_error_code_type>(
           "error_code_id", "The compute path through poses error code"),
+        BT::OutputPort<ActionResult::_error_code_type>(
+          "error_msg", "The compute path through poses error msg"),
       });
   }
 };

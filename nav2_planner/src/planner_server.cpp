@@ -447,46 +447,47 @@ void PlannerServer::computePlanThroughPoses()
 
     action_server_poses_->succeeded_current(result);
   } catch (nav2_core::InvalidPlanner & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::INVALID_PLANNER;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::StartOccupied & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::START_OCCUPIED;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::GoalOccupied & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::GOAL_OCCUPIED;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::NoValidPathCouldBeFound & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::NO_VALID_PATH;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::PlannerTimedOut & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::TIMEOUT;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::StartOutsideMapBounds & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::START_OUTSIDE_MAP;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::GoalOutsideMapBounds & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::GOAL_OUTSIDE_MAP;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::PlannerTFError & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::TF_ERROR;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::NoViapointsGiven & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::NO_VIAPOINTS_GIVEN;
     action_server_poses_->terminate_current(result);
   } catch (nav2_core::PlannerCancelled &) {
-    RCLCPP_INFO(get_logger(), "Goal was canceled. Canceling planning action.");
+    result->error_msg = "Goal was canceled. Canceling planning action.";
+    RCLCPP_INFO(get_logger(), result->error_msg.c_str());
     action_server_poses_->terminate_all();
   } catch (std::exception & ex) {
-    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex);
+    exceptionWarning(curr_start, curr_goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionThroughPosesResult::UNKNOWN;
     action_server_poses_->terminate_current(result);
   }
@@ -549,42 +550,43 @@ PlannerServer::computePlan()
     }
     action_server_pose_->succeeded_current(result);
   } catch (nav2_core::InvalidPlanner & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::INVALID_PLANNER;
     action_server_pose_->terminate_current(result);
   } catch (nav2_core::StartOccupied & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::START_OCCUPIED;
     action_server_pose_->terminate_current(result);
   } catch (nav2_core::GoalOccupied & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::GOAL_OCCUPIED;
     action_server_pose_->terminate_current(result);
   } catch (nav2_core::NoValidPathCouldBeFound & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::NO_VALID_PATH;
     action_server_pose_->terminate_current(result);
   } catch (nav2_core::PlannerTimedOut & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::TIMEOUT;
     action_server_pose_->terminate_current(result);
   } catch (nav2_core::StartOutsideMapBounds & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::START_OUTSIDE_MAP;
     action_server_pose_->terminate_current(result);
   } catch (nav2_core::GoalOutsideMapBounds & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::GOAL_OUTSIDE_MAP;
     action_server_pose_->terminate_current(result);
   } catch (nav2_core::PlannerTFError & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::TF_ERROR;
     action_server_pose_->terminate_current(result);
   } catch (nav2_core::PlannerCancelled &) {
-    RCLCPP_INFO(get_logger(), "Goal was canceled. Canceling planning action.");
+    result->error_msg = "Goal was canceled. Canceling planning action.";
+    RCLCPP_INFO(get_logger(), result->error_msg.c_str());
     action_server_pose_->terminate_all();
   } catch (std::exception & ex) {
-    exceptionWarning(start, goal->goal, goal->planner_id, ex);
+    exceptionWarning(start, goal->goal, goal->planner_id, ex, result->error_msg);
     result->error_code = ActionToPoseResult::UNKNOWN;
     action_server_pose_->terminate_current(result);
   }
@@ -735,14 +737,19 @@ void PlannerServer::exceptionWarning(
   const geometry_msgs::msg::PoseStamped & start,
   const geometry_msgs::msg::PoseStamped & goal,
   const std::string & planner_id,
-  const std::exception & ex)
+  const std::exception & ex,
+  std::string & error_msg)
 {
-  RCLCPP_WARN(
-    get_logger(), "%s plugin failed to plan from (%.2f, %.2f) to (%0.2f, %.2f): \"%s\"",
-    planner_id.c_str(),
-    start.pose.position.x, start.pose.position.y,
-    goal.pose.position.x, goal.pose.position.y,
-    ex.what());
+  std::stringstream ss;
+  ss << std::fixed << std::setprecision(2)
+     << planner_id << "plugin failed to plan from ("
+     << start.pose.position.x << ", " << start.pose.position.y
+     << ") to ("
+     << goal.pose.position.x << ", " << goal.pose.position.y << ")"
+     << ": \"" << ex.what() << "\"";
+
+  error_msg = ss.str();
+  RCLCPP_WARN(get_logger(), error_msg.c_str());
 }
 
 }  // namespace nav2_planner

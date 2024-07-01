@@ -79,6 +79,8 @@ public:
         BT::InputPort<std::string>("behavior_tree", "Behavior tree to run"),
         BT::OutputPort<ActionResult::_error_code_type>(
           "error_code_id", "The navigate through poses error code"),
+        BT::OutputPort<ActionResult::_error_code_type>(
+          "error_msg", "The navigate through poses error msg"),
       });
   }
 };

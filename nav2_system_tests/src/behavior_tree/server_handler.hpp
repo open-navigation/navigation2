@@ -75,6 +75,7 @@ protected:
     & result) override
   {
     result->error_code = nav2_msgs::action::ComputePathToPose::Result::TIMEOUT;
+    result->error_msg = "Timeout";
   }
 
 private:
@@ -93,6 +94,7 @@ protected:
     & result) override
   {
     result->error_code = nav2_msgs::action::FollowPath::Result::NO_VALID_CONTROL;
+    result->error_msg = "No valid control";
   }
 };
 

@@ -133,7 +133,9 @@ def main():
         navigator.goToPose(initial_pose)
 
     elif result == TaskResult.FAILED:
-        print(f'Task at {request_item_location} failed!')
+        (error_code, error_msg) = navigator.getLastActionError()
+        print(f'Task at {request_item_location} failed!:'
+              f'{error_code}:{error_msg}')
         exit(-1)
 
     while not navigator.isTaskComplete():

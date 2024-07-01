@@ -65,7 +65,9 @@ public:
         BT::InputPort<double>("time_allowance", 10.0, "Allowed time for spinning"),
         BT::InputPort<bool>("is_recovery", true, "True if recovery"),
         BT::OutputPort<ActionResult::_error_code_type>(
-          "error_code_id", "The spin behavior error code")
+          "error_code_id", "The spin behavior error code"),
+        BT::OutputPort<ActionResult::_error_code_type>(
+          "error_msg", "The spin behavior error msg"),
       });
   }
 

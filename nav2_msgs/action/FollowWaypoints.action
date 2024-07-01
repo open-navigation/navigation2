@@ -10,6 +10,8 @@ geometry_msgs/PoseStamped[] poses
 uint16 NONE=0
 uint16 UNKNOWN=600
 uint16 TASK_EXECUTOR_FAILED=601
+uint16 NO_WAYPOINTS_GIVEN=602
+uint16 STOP_ON_MISSED_WAYPOINT=603
 
 MissedWaypoint[] missed_waypoints
 uint16 error_code

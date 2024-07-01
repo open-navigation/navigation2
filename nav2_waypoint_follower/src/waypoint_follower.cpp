@@ -230,11 +230,12 @@ void WaypointFollower::followWaypointsHandler(
     static_cast<int>(poses.size()));
 
   if (poses.empty()) {
-    RCLCPP_ERROR(
-      get_logger(),
+    result->error_code =
+      nav2_msgs::action::FollowWaypoints::Result::NO_WAYPOINTS_GIVEN;
+    result->error_msg =
       "Empty vector of waypoints passed to waypoint following "
-      "action potentially due to conversation failure or empty request."
-    );
+      "action potentially due to conversation failure or empty request.";
+    RCLCPP_ERROR(get_logger(), result->error_msg.c_str());
     action_server->terminate_current(result);
     return;
   }
@@ -262,10 +263,12 @@ void WaypointFollower::followWaypointsHandler(
       goal = action_server->accept_pending_goal();
       poses = getLatestGoalPoses<T>(action_server);
       if (poses.empty()) {
-        RCLCPP_ERROR(
-          get_logger(),
+        result->error_code =
+          nav2_msgs::action::FollowWaypoints::Result::NO_WAYPOINTS_GIVEN;
+        result->error_msg =
           "Empty vector of Waypoints passed to waypoint following logic. "
-          "Nothing to execute, returning with failure!");
+          "Nothing to execute, returning with failure!";
+        RCLCPP_ERROR(get_logger(), result->error_msg.c_str());
         action_server->terminate_current(result);
         return;
       }
@@ -307,10 +310,13 @@ void WaypointFollower::followWaypointsHandler(
       result->missed_waypoints.push_back(missedWaypoint);
 
       if (stop_on_failure_) {
-        RCLCPP_WARN(
-          get_logger(), "Failed to process waypoint %i in waypoint "
-          "list and stop on failure is enabled."
-          " Terminating action.", goal_index);
+        result->error_code =
+          nav2_msgs::action::FollowWaypoints::Result::STOP_ON_MISSED_WAYPOINT;
+        result->error_msg =
+          "Failed to process waypoint " + std::to_string(goal_index) +
+          " in waypoint list and stop on failure is enabled."
+          " Terminating action.";
+        RCLCPP_WARN(get_logger(), result->error_msg.c_str());
         action_server->terminate_current(result);
         current_goal_status_.error_code = 0;
         return;
@@ -339,11 +345,12 @@ void WaypointFollower::followWaypointsHandler(
       }
       // if task execution was failed and stop_on_failure_ is on , terminate action
       if (!is_task_executed && stop_on_failure_) {
-        RCLCPP_WARN(
-          get_logger(), "Failed to execute task at waypoint %i "
-          " stop on failure is enabled."
-          " Terminating action.", goal_index);
-
+        result->error_code =
+          nav2_msgs::action::FollowWaypoints::Result::TASK_EXECUTOR_FAILED;
+        result->error_msg =
+          "Failed to execute task at waypoint " + std::to_string(goal_index) +
+          " stop on failure is enabled. Terminating action.";
+        RCLCPP_WARN(get_logger(), result->error_msg.c_str());
         action_server->terminate_current(result);
         current_goal_status_.error_code = 0;
         return;

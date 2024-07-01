@@ -81,7 +81,9 @@ public:
         BT::InputPort<double>("backup_speed", 0.025, "Speed at which to backup"),
         BT::InputPort<double>("time_allowance", 10.0, "Allowed time for reversing"),
         BT::OutputPort<ActionResult::_error_code_type>(
-          "error_code_id", "The back up behavior server error code")
+          "error_code_id", "The back up behavior server error code"),
+        BT::OutputPort<ActionResult::_error_code_type>(
+          "error_msg", "The back up behavior server error msg"),
       });
   }
 
